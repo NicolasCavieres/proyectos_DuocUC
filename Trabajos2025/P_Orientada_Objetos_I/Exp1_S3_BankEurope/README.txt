@@ -1,3 +1,5 @@
+## Para mejor compatibilidad, cambiar el nombre de la carpeta Exp1_S3_BankEurope a solo BankEurope
+
 # Diagrama de Archivos y Paquetes
 
 
