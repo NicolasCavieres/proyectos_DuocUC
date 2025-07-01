@@ -26,11 +26,11 @@ public class Menu {
     public void mostrar() {
         int opcion = -1;
         do {
-            System.out.println("\n==== MENÚ PRINCIPAL ====\n1. Ingreso Usuario\n2. Nuevo Usuario\n3. Salir");
+            System.out.println("\n==== MENÚ PRINCIPAL ====\n1. Ingreso Usuario\n2. Nuevo Usuario\n3. Libros\n4. Salir");
             System.out.print("Seleccione: ");
             try {
                 opcion = Integer.parseInt(sc.nextLine());
-                if (opcion < 1 || opcion > 3) {
+                if (opcion < 1 || opcion > 4) {
                     throw new ExtensionExcepciones("Opción de menú no disponible", TipoError.OPCION_NO_DISPONIBLE);
                 }
             } catch (NumberFormatException e) {
@@ -44,14 +44,15 @@ public class Menu {
                 switch (opcion) {
                     case 1 -> ingresoUsuario();
                     case 2 -> txUser.crearUsuario();
-                    case 3 -> System.out.println("Hasta luego.");
+                    case 3 -> menuLibros();
+                    case 4 -> System.out.println("Hasta luego.");
                 }
             } catch (ExtensionExcepciones e) {
                 System.out.println(e.getMessage() + " (" + e.getTipoError() + ")");
             } catch (Exception e) {
                 System.out.println("Ocurrió un error: " + e.getMessage());
             }
-        } while (opcion != 3);
+        } while (opcion != 4);
     }
 
     private void ingresoUsuario() throws ExtensionExcepciones {
@@ -189,5 +190,86 @@ public class Menu {
     private boolean confirmar(String msg) {
         System.out.print(msg);
         return sc.nextLine().trim().equalsIgnoreCase("S");
+    }
+
+    private void menuLibros() {
+        int op = -1;
+        do {
+            System.out.println("\n=== MENÚ LIBROS ===\n1. Agregar nuevo libro\n2. Eliminar libro\n3. Salir");
+            System.out.print("Seleccione: ");
+            try {
+                op = Integer.parseInt(sc.nextLine());
+                if (op < 1 || op > 3) {
+                    throw new ExtensionExcepciones("Opción de menú no disponible", TipoError.OPCION_NO_DISPONIBLE);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Por favor, ingrese un número válido.");
+                continue;
+            } catch (ExtensionExcepciones e) {
+                System.out.println(e.getMessage() + " (" + e.getTipoError() + ")");
+                continue;
+            }
+
+            switch (op) {
+                case 1 -> agregarLibro();
+                case 2 -> eliminarLibro();
+                case 3 -> System.out.println("Volviendo al menú principal.");
+            }
+        } while (op != 3);
+    }
+
+    private void agregarLibro() {
+        try {
+            System.out.print("Título: ");
+            String titulo = sc.nextLine().trim();
+            if (titulo.isEmpty()) throw new ExtensionExcepciones("El título no puede estar vacío", TipoError.DATOS_INCOMPLETOS);
+
+            System.out.print("Autor: ");
+            String autor = sc.nextLine().trim();
+            if (autor.isEmpty()) throw new ExtensionExcepciones("El autor no puede estar vacío", TipoError.DATOS_INCOMPLETOS);
+
+            System.out.print("Género: ");
+            String genero = sc.nextLine().trim();
+            if (genero.isEmpty()) throw new ExtensionExcepciones("El género no puede estar vacío", TipoError.DATOS_INCOMPLETOS);
+
+            int anio;
+            while (true) {
+                try {
+                    System.out.print("Año: ");
+                    anio = Integer.parseInt(sc.nextLine());
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Ingrese un número válido para el año.");
+                }
+            }
+
+            double precio;
+            while (true) {
+                try {
+                    System.out.print("Precio: ");
+                    precio = Double.parseDouble(sc.nextLine());
+                    break;
+                } catch (NumberFormatException e) {
+                    System.out.println("Ingrese un número válido para el precio.");
+                }
+            }
+
+            Comics nuevo = new Comics(titulo, autor, genero, anio, true, precio);
+            txComic.agregarNuevoComic(nuevo);
+        } catch (ExtensionExcepciones e) {
+            System.out.println(e.getMessage() + " (" + e.getTipoError() + ")");
+        } catch (Exception e) {
+            System.out.println("Error al agregar libro: " + e.getMessage());
+        }
+    }
+
+    private void eliminarLibro() {
+        System.out.print("Título del cómic a eliminar: ");
+        String titulo = sc.nextLine().trim();
+        if (titulo.isEmpty()) {
+            System.out.println("El título no puede estar vacío.");
+            return;
+        }
+        txComic.eliminarComicPorTitulo(titulo);
     }
 }
