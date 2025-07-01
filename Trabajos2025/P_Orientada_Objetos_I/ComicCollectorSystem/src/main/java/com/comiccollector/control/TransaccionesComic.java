@@ -187,4 +187,40 @@ public class TransaccionesComic {
     public void verCatalogo() {
         gestorComic.verCatalogo();
     }
+
+    public void agregarNuevoComic(Comics nuevoComic) {
+        if (nuevoComic == null) {
+            System.out.println("Cómic inválido.");
+            return;
+        }
+        // Validar duplicados por título
+        if (gestorComic.buscarPorTitulo(nuevoComic.getTitulo()) != null) {
+            System.out.println("Ya existe un cómic con ese título.");
+            return;
+        }
+        gestorComic.listar().add(nuevoComic);
+        try {
+            gestorCSV.escribirComics(gestorComic.listar());
+            System.out.println("Cómic agregado correctamente.");
+        } catch (Exception e) {
+            System.err.println("Error al escribir CSV: " + e.getMessage());
+        }
+    }
+
+    public void eliminarComicPorTitulo(String titulo) {
+        Comics c = gestorComic.buscarPorTitulo(titulo);
+        if (c == null) {
+            System.out.println("Cómic no encontrado.");
+            return;
+        }
+        // Liberar de reservas/compras globales
+        gestorComic.liberarComic(c);
+        gestorComic.listar().remove(c);
+        try {
+            gestorCSV.escribirComics(gestorComic.listar());
+            System.out.println("Cómic eliminado correctamente.");
+        } catch (Exception e) {
+            System.err.println("Error al escribir CSV: " + e.getMessage());
+        }
+    }
 }
